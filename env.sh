@@ -1,12 +1,20 @@
-#!/bin/bash
+#!/bin/echo This script should be sourced:
+
+printf "snoing setup\n"
 export PYTHONPATH=$PWD:$PWD/core:$PWD/packages:$PWD/versions:$PYTHONPATH
-echo "snoing setup"
+
 printf "%-50s" "Checking for git..."
-which git &> /dev/null
-test $? -eq 0 && printf "Installed\n" || printf "Not Installed\n"
+if ! command -v git >/dev/null 2>&1; then
+    printf "Not Installed\n"
+    return
+fi
+printf "Installed\n"
+
 printf "%-50s" "Checking if this is a git repository..."
-git branch &> /dev/null
-test $? -eq 0 && USEGIT=1 || USEGIT=0
-test $USEGIT -eq 1 && printf "yes\nAttempting update via git pull...\n" || printf "no\n"
-test $USEGIT -eq 1 && git remote set-url origin git@github.com:snoplus/snoing.git
-test $USEGIT -eq 1 && git pull
+if [[ $(git rev-parse --is-inside-work-tree 2>/dev/null) != true ]]; then
+    printf "no\n"
+    return
+fi
+printf "yes\nAttempting update via git pull...\n"
+git remote set-url origin git@github.com:snoplus/snoing.git
+git pull
