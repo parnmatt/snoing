@@ -3,7 +3,7 @@
 printf "Setup snoing\n"
 
 function cleanup {
-    unset internet snoing_upstream_url
+    unset internet snoing_upstream_url current_branch
     unset cleanup internet_connection
 }
 
@@ -53,6 +53,14 @@ if [[ $(git config remote.origin.url) != $snoing_upstream_url ]]; then
     git fetch upstream
 else
     printf "Using upstream snoing\n"
+fi
+
+current_branch=$(git symbolic-ref HEAD 2>/dev/null)
+current_branch=${current_branch#refs/heads/}
+if ! git config branch.$current_branch.merge >/dev/null 2>&1; then
+    printf "No tracked branch\n"
+    cleanup
+    return
 fi
 
 if ! internet_connection; then
