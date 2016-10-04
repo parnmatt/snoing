@@ -36,14 +36,16 @@ if [[ $(git rev-parse --is-inside-work-tree 2>/dev/null) != true ]]; then
 fi
 printf "yes\n"
 
-snoing_upstream_url="git@github.com:snoplus/snoing.git"
-if [[ $(git config remote.origin.url) != $snoing_upstream_url ]]; then
+snoing_upstream_http_url="https://github.com/snoplus/snoing.git"
+snoing_upstream_ssh_url="git@github.com:snoplus/snoing.git"
+if [[ $(git config remote.origin.url) != $snoing_upstream_http_url \
+     || $(git config remote.origin.url) != $snoing_upstream_ssh_url ]]; then
     printf "Using custom snoing\n"
     printf "Checking upstream\n"
     if ! git config remote.upstream.url >/dev/null; then
-        git remote add -t master upstream $snoing_upstream_url
+        git remote add -t master upstream $snoing_upstream_http_url
     else
-        git remote set-url upstream $snoing_upstream_url
+        git remote set-url upstream $snoing_upstream_http_url
     fi
 
     if ! internet_connection; then
